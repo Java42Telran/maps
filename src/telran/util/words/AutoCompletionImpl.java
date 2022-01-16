@@ -24,13 +24,8 @@ public class AutoCompletionImpl implements AutoCompletion {
 	@Override
 	public Iterable<String> getCompletionOptions(String prefix) {
 		
-		return words.subSet(prefix, getPrefixLimit(prefix));
+		return words.subSet(prefix, AutoCompletion.getPrefixLimit(prefix));
 	}
-	private String getPrefixLimit(String prefix) {
-		char lastChar = prefix.charAt(prefix.length() - 1);
-		char limitChar = (char) (lastChar + 1);
-		return prefix.substring(0, prefix.length() - 1) + limitChar;
-
-	}
+	
 
 }

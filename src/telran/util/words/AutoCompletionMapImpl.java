@@ -12,20 +12,26 @@ HashMap<Character, TreeSet<String>> words = new HashMap<>(); //key - first chara
 	 */
 	public boolean addWord(String word) {
 		
-		// TODO Auto-generated method stub
-		return false;
+		
+		return words.computeIfAbsent(Character.toLowerCase(word.charAt(0)),
+				k -> new TreeSet<String>(String.CASE_INSENSITIVE_ORDER)).add(word);
 	}
 
 	@Override
 	public boolean removeWord(String word) {
-		// TODO Auto-generated method stub
-		return false;
+		TreeSet<String> wordsFirstLetter = words.get(Character.toLowerCase(word.charAt(0)));
+		
+		return wordsFirstLetter != null && wordsFirstLetter.remove(word);
 	}
 
 	@Override
 	public Iterable<String> getCompletionOptions(String prefix) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		char firstLetter = Character.toLowerCase(prefix.charAt(0));
+		TreeSet<String> wordsFirstLetter = words.get(firstLetter);
+		
+		return wordsFirstLetter == null ? Collections.emptyList():
+			wordsFirstLetter.subSet(prefix, AutoCompletion.getPrefixLimit(prefix));
 	}
 	/**
 	 * removes words matching a given predicate
@@ -33,8 +39,14 @@ HashMap<Character, TreeSet<String>> words = new HashMap<>(); //key - first chara
 	 * @return count of the removed words
 	 */
 	public int removeIf(Predicate<String> predicate) {
-		//TODO
-		return 0;
+		int count = 0;
+		for (Collection<String> wordsFirstLetter: words.values()) {
+			int oldSize = wordsFirstLetter.size();
+			wordsFirstLetter.removeIf(predicate);
+			count = count + (oldSize - wordsFirstLetter.size());
+		}
+		return count;
 	}
+	
 
 }
